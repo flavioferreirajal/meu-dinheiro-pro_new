@@ -1,0 +1,2529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#10b981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Meu Dinheiro Pro - Controle Financeiro Completo</title>
+    <link rel="manifest" href="#" id="manifest-placeholder">
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/recharts@2.5.0/dist/Recharts.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --primary-light: #e0f2fe;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --info: #8b5cf6;
+            --info-light: #ede9fe;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-tertiary: #94a3b8;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Epilogue', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            width: 100%;
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--info));
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: var(--primary-light);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 2.25rem;
+            font-weight: 900;
+            font-family: 'Epilogue', sans-serif;
+            margin: 0.5rem 0;
+            line-height: 1;
+        }
+
+        .stat-value.positive {
+            color: var(--success);
+        }
+
+        .stat-value.negative {
+            color: var(--danger);
+        }
+
+        .stat-trend {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--text-secondary);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-family: 'Epilogue', sans-serif;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: var(--bg-primary);
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .password-input-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        .password-toggle:hover {
+            color: var(--text-primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Transactions List */
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .transaction-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+            transform: translateX(4px);
+        }
+
+        .transaction-item.future {
+            background: var(--warning-light);
+            border-color: var(--warning);
+        }
+
+        .transaction-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .transaction-category {
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .transaction-meta {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .transaction-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .transaction-amount {
+            font-weight: 800;
+            font-size: 1.25rem;
+            font-family: 'Epilogue', sans-serif;
+        }
+
+        .transaction-amount.income {
+            color: var(--success);
+        }
+
+        .transaction-amount.expense {
+            color: var(--danger);
+        }
+
+        .transaction-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            animation: fadeIn 0.2s;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal {
+            background: var(--bg-primary);
+            border-radius: 24px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-family: 'Epilogue', sans-serif;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* Login/Register */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--info-light) 100%);
+            padding: 1rem;
+        }
+
+        .auth-card {
+            background: var(--bg-primary);
+            border-radius: 32px;
+            padding: 3rem;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .auth-logo {
+            font-family: 'Epilogue', sans-serif;
+            font-weight: 900;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            font-size: 1.05rem;
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-toggle button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+            font-family: inherit;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Cashflow Chart */
+        .cashflow-chart {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        /* Bank Accounts */
+        .bank-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .bank-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bank-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .bank-name {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .bank-balance {
+            font-size: 2rem;
+            font-weight: 900;
+            font-family: 'Epilogue', sans-serif;
+            margin-bottom: 0.5rem;
+        }
+
+        .bank-type {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: var(--success-light);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .alert-danger {
+            background: var(--danger-light);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .alert-info {
+            background: var(--info-light);
+            color: var(--info);
+            border: 1px solid var(--info);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1.5rem 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                margin: 1rem;
+                max-height: 85vh;
+            }
+
+            .auth-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .stat-value {
+                font-size: 1.875rem;
+            }
+
+            .transaction-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .transaction-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+        const { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+
+        // Categorias baseadas no Excel
+        const INCOME_CATEGORIES = [
+            { code: '50', name: 'Saldo Anterior' },
+            { code: '51', name: 'Salários' },
+            { code: '52', name: '13º Salário' },
+            { code: '53', name: 'Férias' },
+            { code: '54', name: 'PLR' },
+            { code: '55', name: 'Juros s/ Poupança' },
+            { code: '56', name: 'Juros s/ Aplicações' },
+            { code: '57', name: 'Caixa' },
+            { code: '58', name: 'Empréstimos' },
+            { code: '59', name: 'Aluguéis' },
+            { code: '60', name: 'Rendimentos' },
+            { code: '64', name: 'VR Alimentação' },
+            { code: '87', name: 'Conta Investimento BTG' },
+            { code: '99', name: 'Outras Rendas' }
+        ];
+
+        const EXPENSE_CATEGORIES = [
+            { code: '100', name: 'Habitação' },
+            { code: '200', name: 'Alimentação' },
+            { code: '300', name: 'Transporte' },
+            { code: '400', name: 'Saúde' },
+            { code: '500', name: 'Educação' },
+            { code: '600', name: 'Lazer' },
+            { code: '700', name: 'Vestuário' },
+            { code: '800', name: 'Serviços' },
+            { code: '900', name: 'Investimentos' },
+            { code: '1000', name: 'Cartão de Crédito' },
+            { code: '1100', name: 'Outros' }
+        ];
+
+        const BANKS = [
+            'Banco do Brasil',
+            'Itaú',
+            'Bradesco',
+            'Santander',
+            'Caixa Econômica',
+            'Nubank',
+            'Inter',
+            'BTG Pactual',
+            'C6 Bank',
+            'PicPay',
+            'Outro'
+        ];
+
+        const PAYMENT_METHODS = [
+            'Dinheiro',
+            'Débito',
+            'Crédito',
+            'PIX',
+            'Transferência',
+            'Boleto'
+        ];
+
+        // Storage Service
+        const StorageService = {
+            async init() {
+                try {
+                    const users = await this.get('users');
+                    if (!users) {
+                        await this.set('users', JSON.stringify([
+                            {
+                                id: '1',
+                                name: 'Administrador',
+                                email: 'admin@meudinheiro.com',
+                                password: 'admin123',
+                                role: 'admin',
+                                createdAt: new Date().toISOString()
+                            }
+                        ]));
+                    }
+
+                    // Criar bancos padrão se não existirem
+                    const banks = await this.get('banks_1');
+                    if (!banks) {
+                        await this.set('banks_1', JSON.stringify([
+                            { id: '1', name: 'Nubank', type: 'Conta Corrente', balance: 0, color: '#8b5cf6' },
+                            { id: '2', name: 'Cartão Nubank', type: 'Cartão de Crédito', balance: 0, color: '#ef4444' }
+                        ]));
+                    }
+                } catch (error) {
+                    console.error('Erro ao inicializar storage:', error);
+                }
+            },
+
+            async get(key) {
+                try {
+                    const result = await window.storage.get(key);
+                    return result ? result.value : null;
+                } catch (error) {
+                    return null;
+                }
+            },
+
+            async set(key, value) {
+                try {
+                    return await window.storage.set(key, value);
+                } catch (error) {
+                    console.error('Erro ao salvar:', error);
+                    return null;
+                }
+            },
+
+            async delete(key) {
+                try {
+                    return await window.storage.delete(key);
+                } catch (error) {
+                    console.error('Erro ao deletar:', error);
+                    return null;
+                }
+            }
+        };
+
+        // Auth Hook
+        function useAuth() {
+            const [currentUser, setCurrentUser] = useState(null);
+            const [loading, setLoading] = useState(true);
+
+            useEffect(() => {
+                loadCurrentUser();
+            }, []);
+
+            async function loadCurrentUser() {
+                try {
+                    const userJson = await StorageService.get('currentUser');
+                    if (userJson) {
+                        setCurrentUser(JSON.parse(userJson));
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar usuário:', error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            async function login(email, password) {
+                const usersJson = await StorageService.get('users');
+                const users = usersJson ? JSON.parse(usersJson) : [];
+                
+                const user = users.find(u => u.email === email && u.password === password);
+                
+                if (user) {
+                    const { password, ...userWithoutPassword } = user;
+                    await StorageService.set('currentUser', JSON.stringify(userWithoutPassword));
+                    setCurrentUser(userWithoutPassword);
+                    return { success: true };
+                }
+                
+                return { success: false, error: 'Email ou senha inválidos' };
+            }
+
+            async function register(name, email, password) {
+                const usersJson = await StorageService.get('users');
+                const users = usersJson ? JSON.parse(usersJson) : [];
+                
+                if (users.find(u => u.email === email)) {
+                    return { success: false, error: 'Email já cadastrado' };
+                }
+
+                const newUser = {
+                    id: Date.now().toString(),
+                    name,
+                    email,
+                    password,
+                    role: 'user',
+                    createdAt: new Date().toISOString()
+                };
+
+                users.push(newUser);
+                await StorageService.set('users', JSON.stringify(users));
+                
+                const { password: _, ...userWithoutPassword } = newUser;
+                await StorageService.set('currentUser', JSON.stringify(userWithoutPassword));
+                setCurrentUser(userWithoutPassword);
+                
+                // Criar bancos padrão para novo usuário
+                await StorageService.set(`banks_${newUser.id}`, JSON.stringify([
+                    { id: '1', name: 'Conta Principal', type: 'Conta Corrente', balance: 0, color: '#0ea5e9' }
+                ]));
+                
+                return { success: true };
+            }
+
+            async function logout() {
+                await StorageService.delete('currentUser');
+                setCurrentUser(null);
+            }
+
+            return { currentUser, login, register, logout, loading };
+        }
+
+        // Transactions Hook
+        function useTransactions(userId) {
+            const [transactions, setTransactions] = useState([]);
+            const [loading, setLoading] = useState(true);
+
+            useEffect(() => {
+                loadTransactions();
+            }, [userId]);
+
+            async function loadTransactions() {
+                try {
+                    const key = `transactions_${userId}`;
+                    const data = await StorageService.get(key);
+                    setTransactions(data ? JSON.parse(data) : []);
+                } catch (error) {
+                    console.error('Erro ao carregar transações:', error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            async function addTransaction(transaction) {
+                const newTransaction = {
+                    id: Date.now().toString(),
+                    ...transaction,
+                    userId,
+                    createdAt: new Date().toISOString()
+                };
+
+                const updated = [...transactions, newTransaction];
+                setTransactions(updated);
+                await StorageService.set(`transactions_${userId}`, JSON.stringify(updated));
+                return newTransaction;
+            }
+
+            async function updateTransaction(id, updates) {
+                const updated = transactions.map(t => 
+                    t.id === id ? { ...t, ...updates } : t
+                );
+                setTransactions(updated);
+                await StorageService.set(`transactions_${userId}`, JSON.stringify(updated));
+            }
+
+            async function deleteTransaction(id) {
+                const updated = transactions.filter(t => t.id !== id);
+                setTransactions(updated);
+                await StorageService.set(`transactions_${userId}`, JSON.stringify(updated));
+            }
+
+            return { transactions, addTransaction, updateTransaction, deleteTransaction, loading };
+        }
+
+        // Banks Hook
+        function useBanks(userId) {
+            const [banks, setBanks] = useState([]);
+
+            useEffect(() => {
+                loadBanks();
+            }, [userId]);
+
+            async function loadBanks() {
+                try {
+                    const data = await StorageService.get(`banks_${userId}`);
+                    setBanks(data ? JSON.parse(data) : []);
+                } catch (error) {
+                    console.error('Erro ao carregar bancos:', error);
+                }
+            }
+
+            async function addBank(bank) {
+                const newBank = {
+                    id: Date.now().toString(),
+                    ...bank
+                };
+                const updated = [...banks, newBank];
+                setBanks(updated);
+                await StorageService.set(`banks_${userId}`, JSON.stringify(updated));
+            }
+
+            async function updateBank(id, updates) {
+                const updated = banks.map(b => 
+                    b.id === id ? { ...b, ...updates } : b
+                );
+                setBanks(updated);
+                await StorageService.set(`banks_${userId}`, JSON.stringify(updated));
+            }
+
+            async function deleteBank(id) {
+                const updated = banks.filter(b => b.id !== id);
+                setBanks(updated);
+                await StorageService.set(`banks_${userId}`, JSON.stringify(updated));
+            }
+
+            return { banks, addBank, updateBank, deleteBank };
+        }
+
+        // Password Input Component
+        function PasswordInput({ value, onChange, placeholder, required }) {
+            const [showPassword, setShowPassword] = useState(false);
+
+            return (
+                <div className="password-input-wrapper">
+                    <input
+                        type={showPassword ? 'text' : 'password'}
+                        className="form-input"
+                        value={value}
+                        onChange={onChange}
+                        placeholder={placeholder}
+                        required={required}
+                        style={{ paddingRight: '3rem' }}
+                    />
+                    <button
+                        type="button"
+                        className="password-toggle"
+                        onClick={() => setShowPassword(!showPassword)}
+                        title={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                    >
+                        {showPassword ? '👁️' : '👁️‍🗨️'}
+                    </button>
+                </div>
+            );
+        }
+
+        // Login Component
+        function LoginForm({ onLogin, onToggle }) {
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+
+            async function handleSubmit(e) {
+                e.preventDefault();
+                setError('');
+
+                const result = await onLogin(email, password);
+                if (!result.success) {
+                    setError(result.error);
+                }
+            }
+
+            return (
+                <div className="auth-container">
+                    <div className="auth-card">
+                        <div className="auth-logo">💰 Meu Dinheiro <span style={{fontSize: '0.5em'}}>PRO</span></div>
+                        <p className="auth-subtitle">Controle Financeiro Completo e Profissional</p>
+
+                        {error && (
+                            <div className="alert alert-danger">
+                                ⚠️ {error}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label className="form-label">Email</label>
+                                <input
+                                    type="email"
+                                    className="form-input"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="seu@email.com"
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Senha</label>
+                                <PasswordInput
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    required
+                                />
+                            </div>
+
+                            <button type="submit" className="btn btn-primary" style={{width: '100%'}}>
+                                🔐 Entrar
+                            </button>
+                        </form>
+
+                        <div className="auth-toggle">
+                            Não tem conta? <button onClick={onToggle}>Cadastre-se grátis</button>
+                        </div>
+
+                        <div style={{marginTop: '1.5rem', padding: '1rem', background: 'var(--info-light)', borderRadius: '12px', fontSize: '0.875rem'}}>
+                            <strong>🎯 Conta Demo:</strong><br/>
+                            Email: admin@meudinheiro.com<br/>
+                            Senha: admin123
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Register Component
+        function RegisterForm({ onRegister, onToggle }) {
+            const [name, setName] = useState('');
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+
+            async function handleSubmit(e) {
+                e.preventDefault();
+                setError('');
+
+                if (password.length < 6) {
+                    setError('A senha deve ter no mínimo 6 caracteres');
+                    return;
+                }
+
+                const result = await onRegister(name, email, password);
+                if (!result.success) {
+                    setError(result.error);
+                }
+            }
+
+            return (
+                <div className="auth-container">
+                    <div className="auth-card">
+                        <div className="auth-logo">💰 Meu Dinheiro <span style={{fontSize: '0.5em'}}>PRO</span></div>
+                        <p className="auth-subtitle">Crie sua conta gratuita agora</p>
+
+                        {error && (
+                            <div className="alert alert-danger">
+                                ⚠️ {error}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label className="form-label">Nome Completo</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="Seu nome"
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Email</label>
+                                <input
+                                    type="email"
+                                    className="form-input"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="seu@email.com"
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Senha</label>
+                                <PasswordInput
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Mínimo 6 caracteres"
+                                    required
+                                />
+                            </div>
+
+                            <button type="submit" className="btn btn-primary" style={{width: '100%'}}>
+                                ✨ Criar Conta Grátis
+                            </button>
+                        </form>
+
+                        <div className="auth-toggle">
+                            Já tem conta? <button onClick={onToggle}>Faça login</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Dashboard Component
+        function Dashboard({ user, onLogout }) {
+            const [activeTab, setActiveTab] = useState('overview');
+            const { transactions, addTransaction, updateTransaction, deleteTransaction, loading } = useTransactions(user.id);
+            const { banks, addBank, updateBank, deleteBank } = useBanks(user.id);
+            const [showModal, setShowModal] = useState(false);
+            const [showBankModal, setShowBankModal] = useState(false);
+            const [editingTransaction, setEditingTransaction] = useState(null);
+            const [editingBank, setEditingBank] = useState(null);
+
+            const stats = useMemo(() => {
+                const today = new Date();
+                const currentMonth = transactions.filter(t => {
+                    const tDate = new Date(t.date);
+                    return tDate.getMonth() === today.getMonth() && 
+                           tDate.getFullYear() === today.getFullYear() &&
+                           tDate <= today;
+                });
+
+                const income = currentMonth
+                    .filter(t => t.type === 'income')
+                    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+                
+                const expenses = currentMonth
+                    .filter(t => t.type === 'expense')
+                    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+                
+                const balance = income - expenses;
+
+                // Transações futuras
+                const futureTransactions = transactions.filter(t => new Date(t.date) > today);
+
+                return { income, expenses, balance, futureCount: futureTransactions.length };
+            }, [transactions]);
+
+            function handleAddTransaction() {
+                setEditingTransaction(null);
+                setShowModal(true);
+            }
+
+            function handleEditTransaction(transaction) {
+                setEditingTransaction(transaction);
+                setShowModal(true);
+            }
+
+            async function handleDeleteTransaction(id) {
+                if (confirm('Tem certeza que deseja excluir esta transação?')) {
+                    await deleteTransaction(id);
+                }
+            }
+
+            function handleAddBank() {
+                setEditingBank(null);
+                setShowBankModal(true);
+            }
+
+            function handleEditBank(bank) {
+                setEditingBank(bank);
+                setShowBankModal(true);
+            }
+
+            async function handleDeleteBank(id) {
+                if (confirm('Tem certeza que deseja excluir esta conta/cartão?')) {
+                    await deleteBank(id);
+                }
+            }
+
+            return (
+                <div className="app-container">
+                    <header className="header">
+                        <div className="header-content">
+                            <div className="logo">
+                                💰 Meu Dinheiro 
+                                <span className="logo-badge">PRO</span>
+                            </div>
+                            <div className="user-info">
+                                <div className="user-avatar">
+                                    {user.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div style={{display: 'none'}} className="hide-mobile">
+                                    <div style={{fontWeight: 700}}>{user.name}</div>
+                                    <div style={{fontSize: '0.875rem', opacity: 0.9}}>{user.email}</div>
+                                </div>
+                                <button className="btn btn-logout btn-sm" onClick={onLogout}>
+                                    🚪 Sair
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="main-content">
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <div className="stat-header">
+                                    <div>
+                                        <div className="stat-label">Receitas do Mês</div>
+                                        <div className="stat-value positive">
+                                            R$ {stats.income.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                                        </div>
+                                        <div className="stat-trend">
+                                            📈 Entradas confirmadas
+                                        </div>
+                                    </div>
+                                    <div className="stat-icon" style={{background: 'var(--success-light)'}}>
+                                        💰
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="stat-card">
+                                <div className="stat-header">
+                                    <div>
+                                        <div className="stat-label">Despesas do Mês</div>
+                                        <div className="stat-value negative">
+                                            R$ {stats.expenses.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                                        </div>
+                                        <div className="stat-trend">
+                                            📉 Saídas confirmadas
+                                        </div>
+                                    </div>
+                                    <div className="stat-icon" style={{background: 'var(--danger-light)'}}>
+                                        💸
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="stat-card">
+                                <div className="stat-header">
+                                    <div>
+                                        <div className="stat-label">Saldo Atual</div>
+                                        <div className={`stat-value ${stats.balance >= 0 ? 'positive' : 'negative'}`}>
+                                            R$ {stats.balance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                                        </div>
+                                        <div className="stat-trend">
+                                            {stats.balance >= 0 ? '✅' : '⚠️'} Balanço do mês
+                                        </div>
+                                    </div>
+                                    <div className="stat-icon" style={{background: 'var(--info-light)'}}>
+                                        📊
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="stat-card">
+                                <div className="stat-header">
+                                    <div>
+                                        <div className="stat-label">Lançamentos Futuros</div>
+                                        <div className="stat-value" style={{color: 'var(--warning)'}}>
+                                            {stats.futureCount}
+                                        </div>
+                                        <div className="stat-trend">
+                                            🔮 Próximos 12 meses
+                                        </div>
+                                    </div>
+                                    <div className="stat-icon" style={{background: 'var(--warning-light)'}}>
+                                        📅
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="tabs">
+                            <button 
+                                className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('overview')}
+                            >
+                                📊 Visão Geral
+                            </button>
+                            <button 
+                                className={`tab ${activeTab === 'transactions' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('transactions')}
+                            >
+                                💳 Transações
+                            </button>
+                            <button 
+                                className={`tab ${activeTab === 'cashflow' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('cashflow')}
+                            >
+                                📈 Fluxo de Caixa
+                            </button>
+                            <button 
+                                className={`tab ${activeTab === 'banks' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('banks')}
+                            >
+                                🏦 Contas & Cartões
+                            </button>
+                            {user.role === 'admin' && (
+                                <button 
+                                    className={`tab ${activeTab === 'admin' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('admin')}
+                                >
+                                    👥 Administração
+                                </button>
+                            )}
+                        </div>
+
+                        {activeTab === 'overview' && (
+                            <OverviewTab 
+                                transactions={transactions}
+                                stats={stats}
+                                onAddTransaction={handleAddTransaction}
+                            />
+                        )}
+
+                        {activeTab === 'transactions' && (
+                            <TransactionsTab 
+                                transactions={transactions}
+                                onAdd={handleAddTransaction}
+                                onEdit={handleEditTransaction}
+                                onDelete={handleDeleteTransaction}
+                                loading={loading}
+                            />
+                        )}
+
+                        {activeTab === 'cashflow' && (
+                            <CashflowTab transactions={transactions} />
+                        )}
+
+                        {activeTab === 'banks' && (
+                            <BanksTab
+                                banks={banks}
+                                transactions={transactions}
+                                onAdd={handleAddBank}
+                                onEdit={handleEditBank}
+                                onDelete={handleDeleteBank}
+                            />
+                        )}
+
+                        {activeTab === 'admin' && user.role === 'admin' && (
+                            <AdminTab userId={user.id} />
+                        )}
+                    </main>
+
+                    {showModal && (
+                        <TransactionModal
+                            transaction={editingTransaction}
+                            banks={banks}
+                            onSave={async (data) => {
+                                if (editingTransaction) {
+                                    await updateTransaction(editingTransaction.id, data);
+                                } else {
+                                    await addTransaction(data);
+                                }
+                                setShowModal(false);
+                            }}
+                            onClose={() => setShowModal(false)}
+                        />
+                    )}
+
+                    {showBankModal && (
+                        <BankModal
+                            bank={editingBank}
+                            onSave={async (data) => {
+                                if (editingBank) {
+                                    await updateBank(editingBank.id, data);
+                                } else {
+                                    await addBank(data);
+                                }
+                                setShowBankModal(false);
+                            }}
+                            onClose={() => setShowBankModal(false)}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        // Overview Tab Component
+        function OverviewTab({ transactions, stats, onAddTransaction }) {
+            const categoryData = useMemo(() => {
+                const today = new Date();
+                const currentMonth = transactions.filter(t => {
+                    const tDate = new Date(t.date);
+                    return tDate.getMonth() === today.getMonth() && 
+                           tDate.getFullYear() === today.getFullYear() &&
+                           tDate <= today &&
+                           t.type === 'expense';
+                });
+
+                const categories = {};
+                currentMonth.forEach(t => {
+                    categories[t.category] = (categories[t.category] || 0) + parseFloat(t.amount);
+                });
+
+                return Object.entries(categories)
+                    .map(([name, value]) => ({ name, value }))
+                    .sort((a, b) => b.value - a.value)
+                    .slice(0, 10);
+            }, [transactions]);
+
+            const recentTransactions = transactions
+                .filter(t => new Date(t.date) <= new Date())
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+
+            return (
+                <div>
+                    <div className="card">
+                        <div className="card-header">
+                            <h2 className="card-title">💎 Top 10 Categorias de Gastos</h2>
+                            <button className="btn btn-primary btn-sm" onClick={onAddTransaction}>
+                                ➕ Nova Transação
+                            </button>
+                        </div>
+
+                        {categoryData.length > 0 ? (
+                            <div style={{display: 'grid', gap: '1rem'}}>
+                                {categoryData.map((cat, idx) => (
+                                    <div key={cat.name} style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '1rem'
+                                    }}>
+                                        <div style={{
+                                            width: '32px',
+                                            height: '32px',
+                                            borderRadius: '8px',
+                                            background: 'var(--primary-light)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontWeight: 700,
+                                            color: 'var(--primary)'
+                                        }}>
+                                            {idx + 1}
+                                        </div>
+                                        <div style={{flex: 1}}>
+                                            <div style={{fontWeight: 700, marginBottom: '0.25rem', fontSize: '1.05rem'}}>
+                                                {cat.name}
+                                            </div>
+                                            <div style={{
+                                                height: '10px',
+                                                background: 'var(--bg-tertiary)',
+                                                borderRadius: '6px',
+                                                overflow: 'hidden'
+                                            }}>
+                                                <div style={{
+                                                    height: '100%',
+                                                    background: `linear-gradient(90deg, var(--danger), var(--warning))`,
+                                                    width: `${(cat.value / categoryData[0].value) * 100}%`,
+                                                    transition: 'width 0.5s'
+                                                }}></div>
+                                            </div>
+                                        </div>
+                                        <div style={{
+                                            fontWeight: 800,
+                                            color: 'var(--danger)',
+                                            minWidth: '120px',
+                                            textAlign: 'right',
+                                            fontSize: '1.125rem',
+                                            fontFamily: 'Epilogue, sans-serif'
+                                        }}>
+                                            R$ {cat.value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="empty-state">
+                                <div className="empty-state-icon">📊</div>
+                                <div className="empty-state-title">Nenhuma despesa neste mês</div>
+                                <p>Adicione suas primeiras transações para começar a analisar</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="card">
+                        <div className="card-header">
+                            <h2 className="card-title">⏱️ Transações Recentes</h2>
+                        </div>
+
+                        {recentTransactions.length > 0 ? (
+                            <div className="transaction-list">
+                                {recentTransactions.map(t => (
+                                    <div key={t.id} className="transaction-item">
+                                        <div className="transaction-info">
+                                            <div className="transaction-category">{t.category}</div>
+                                            <div className="transaction-meta">
+                                                <span>{new Date(t.date).toLocaleDateString('pt-BR')}</span>
+                                                {t.bank && <span>🏦 {t.bank}</span>}
+                                                {t.paymentMethod && <span>💳 {t.paymentMethod}</span>}
+                                            </div>
+                                        </div>
+                                        <div className={`transaction-amount ${t.type}`}>
+                                            {t.type === 'income' ? '+' : '-'} R$ {parseFloat(t.amount).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="empty-state">
+                                <div className="empty-state-icon">💳</div>
+                                <div className="empty-state-title">Nenhuma transação</div>
+                                <p>Comece adicionando suas receitas e despesas</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // Transactions Tab Component
+        function TransactionsTab({ transactions, onAdd, onEdit, onDelete, loading }) {
+            const [filter, setFilter] = useState('all');
+            const [categoryFilter, setCategoryFilter] = useState('all');
+            const [bankFilter, setBankFilter] = useState('all');
+            const [dateFilter, setDateFilter] = useState('all'); // all, past, future
+
+            const filteredTransactions = transactions.filter(t => {
+                const today = new Date();
+                const tDate = new Date(t.date);
+                
+                if (filter !== 'all' && t.type !== filter) return false;
+                if (categoryFilter !== 'all' && t.category !== categoryFilter) return false;
+                if (bankFilter !== 'all' && t.bank !== bankFilter) return false;
+                
+                if (dateFilter === 'past' && tDate > today) return false;
+                if (dateFilter === 'future' && tDate <= today) return false;
+                
+                return true;
+            }).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const uniqueCategories = [...new Set(transactions.map(t => t.category))].filter(Boolean);
+            const uniqueBanks = [...new Set(transactions.map(t => t.bank))].filter(Boolean);
+
+            if (loading) {
+                return (
+                    <div className="loading">
+                        <div className="spinner"></div>
+                        <p>Carregando transações...</p>
+                    </div>
+                );
+            }
+
+            const today = new Date();
+
+            return (
+                <div className="card">
+                    <div className="card-header">
+                        <h2 className="card-title">📋 Todas as Transações</h2>
+                        <button className="btn btn-primary btn-sm" onClick={onAdd}>
+                            ➕ Adicionar
+                        </button>
+                    </div>
+
+                    <div className="filter-bar">
+                        <div className="filter-group">
+                            <button 
+                                className={`btn btn-sm ${filter === 'all' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setFilter('all')}
+                            >
+                                Todas
+                            </button>
+                            <button 
+                                className={`btn btn-sm ${filter === 'income' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setFilter('income')}
+                            >
+                                ✅ Receitas
+                            </button>
+                            <button 
+                                className={`btn btn-sm ${filter === 'expense' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setFilter('expense')}
+                            >
+                                ❌ Despesas
+                            </button>
+                        </div>
+
+                        <div className="filter-group">
+                            <button 
+                                className={`btn btn-sm ${dateFilter === 'all' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setDateFilter('all')}
+                            >
+                                Todas Datas
+                            </button>
+                            <button 
+                                className={`btn btn-sm ${dateFilter === 'past' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setDateFilter('past')}
+                            >
+                                ⏮️ Passadas
+                            </button>
+                            <button 
+                                className={`btn btn-sm ${dateFilter === 'future' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setDateFilter('future')}
+                            >
+                                ⏭️ Futuras
+                            </button>
+                        </div>
+
+                        {uniqueCategories.length > 0 && (
+                            <select 
+                                className="form-select"
+                                value={categoryFilter}
+                                onChange={(e) => setCategoryFilter(e.target.value)}
+                                style={{width: 'auto', minWidth: '150px'}}
+                            >
+                                <option value="all">📁 Todas Categorias</option>
+                                {uniqueCategories.map(cat => (
+                                    <option key={cat} value={cat}>{cat}</option>
+                                ))}
+                            </select>
+                        )}
+
+                        {uniqueBanks.length > 0 && (
+                            <select 
+                                className="form-select"
+                                value={bankFilter}
+                                onChange={(e) => setBankFilter(e.target.value)}
+                                style={{width: 'auto', minWidth: '150px'}}
+                            >
+                                <option value="all">🏦 Todos os Bancos</option>
+                                {uniqueBanks.map(bank => (
+                                    <option key={bank} value={bank}>{bank}</option>
+                                ))}
+                            </select>
+                        )}
+                    </div>
+
+                    {filteredTransactions.length > 0 ? (
+                        <div className="transaction-list">
+                            {filteredTransactions.map(t => {
+                                const isFuture = new Date(t.date) > today;
+                                return (
+                                    <div key={t.id} className={`transaction-item ${isFuture ? 'future' : ''}`}>
+                                        <div className="transaction-info">
+                                            <div className="transaction-category">
+                                                {isFuture && '🔮 '}
+                                                {t.category}
+                                            </div>
+                                            <div className="transaction-meta">
+                                                <span>📅 {new Date(t.date).toLocaleDateString('pt-BR')}</span>
+                                                {t.bank && <span>🏦 {t.bank}</span>}
+                                                {t.paymentMethod && <span>💳 {t.paymentMethod}</span>}
+                                                {t.description && <span>📝 {t.description}</span>}
+                                            </div>
+                                        </div>
+                                        <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+                                            <div className={`transaction-amount ${t.type}`}>
+                                                {t.type === 'income' ? '+' : '-'} R$ {parseFloat(t.amount).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                                            </div>
+                                            <div className="transaction-actions">
+                                                <button 
+                                                    className="btn-icon" 
+                                                    onClick={() => onEdit(t)}
+                                                    title="Editar"
+                                                >
+                                                    ✏️
+                                                </button>
+                                                <button 
+                                                    className="btn-icon" 
+                                                    onClick={() => onDelete(t.id)}
+                                                    title="Excluir"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="empty-state">
+                            <div className="empty-state-icon">🔍</div>
+                            <div className="empty-state-title">Nenhuma transação encontrada</div>
+                            <p>Ajuste os filtros ou adicione novas transações</p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Cashflow Tab Component
+        function CashflowTab({ transactions }) {
+            const chartData = useMemo(() => {
+                const monthlyData = {};
+                const today = new Date();
+                
+                // Gerar próximos 12 meses
+                for (let i = 0; i < 12; i++) {
+                    const date = new Date(today.getFullYear(), today.getMonth() + i, 1);
+                    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    monthlyData[key] = {
+                        month: date.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }),
+                        income: 0,
+                        expense: 0,
+                        balance: 0
+                    };
+                }
+
+                transactions.forEach(t => {
+                    const date = new Date(t.date);
+                    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    
+                    if (monthlyData[key]) {
+                        const amount = parseFloat(t.amount);
+                        if (t.type === 'income') {
+                            monthlyData[key].income += amount;
+                        } else {
+                            monthlyData[key].expense += amount;
+                        }
+                    }
+                });
+
+                // Calcular saldo acumulado
+                let accumulated = 0;
+                return Object.keys(monthlyData).sort().map(key => {
+                    const data = monthlyData[key];
+                    const monthBalance = data.income - data.expense;
+                    accumulated += monthBalance;
+                    return {
+                        ...data,
+                        balance: monthBalance,
+                        accumulated
+                    };
+                });
+            }, [transactions]);
+
+            return (
+                <div>
+                    <div className="cashflow-chart">
+                        <h2 className="card-title" style={{marginBottom: '2rem'}}>
+                            📈 Projeção de Fluxo de Caixa - Próximos 12 Meses
+                        </h2>
+                        <ResponsiveContainer width="100%" height={400}>
+                            <LineChart data={chartData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                                <XAxis 
+                                    dataKey="month" 
+                                    stroke="var(--text-secondary)"
+                                    style={{ fontSize: '0.875rem' }}
+                                />
+                                <YAxis 
+                                    stroke="var(--text-secondary)"
+                                    style={{ fontSize: '0.875rem' }}
+                                    tickFormatter={(value) => `R$ ${value.toLocaleString('pt-BR')}`}
+                                />
+                                <Tooltip 
+                                    contentStyle={{
+                                        background: 'var(--bg-primary)',
+                                        border: '1px solid var(--border)',
+                                        borderRadius: '12px',
+                                        padding: '1rem'
+                                    }}
+                                    formatter={(value) => `R$ ${value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`}
+                                />
+                                <Legend />
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="income" 
+                                    stroke="var(--success)" 
+                                    strokeWidth={3}
+                                    name="Receitas"
+                                    dot={{ fill: 'var(--success)', r: 5 }}
+                                />
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="expense" 
+                                    stroke="var(--danger)" 
+                                    strokeWidth={3}
+                                    name="Despesas"
+                                    dot={{ fill: 'var(--danger)', r: 5 }}
+                                />
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="accumulated" 
+                                    stroke="var(--primary)" 
+                                    strokeWidth={3}
+                                    name="Saldo Acumulado"
+                                    dot={{ fill: 'var(--primary)', r: 5 }}
+                                    strokeDasharray="5 5"
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    <div className="cashflow-chart">
+                        <h2 className="card-title" style={{marginBottom: '2rem'}}>
+                            📊 Receitas vs Despesas por Mês
+                        </h2>
+                        <ResponsiveContainer width="100%" height={400}>
+                            <BarChart data={chartData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                                <XAxis 
+                                    dataKey="month" 
+                                    stroke="var(--text-secondary)"
+                                    style={{ fontSize: '0.875rem' }}
+                                />
+                                <YAxis 
+                                    stroke="var(--text-secondary)"
+                                    style={{ fontSize: '0.875rem' }}
+                                    tickFormatter={(value) => `R$ ${value.toLocaleString('pt-BR')}`}
+                                />
+                                <Tooltip 
+                                    contentStyle={{
+                                        background: 'var(--bg-primary)',
+                                        border: '1px solid var(--border)',
+                                        borderRadius: '12px',
+                                        padding: '1rem'
+                                    }}
+                                    formatter={(value) => `R$ ${value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`}
+                                />
+                                <Legend />
+                                <Bar dataKey="income" fill="var(--success)" name="Receitas" radius={[8, 8, 0, 0]} />
+                                <Bar dataKey="expense" fill="var(--danger)" name="Despesas" radius={[8, 8, 0, 0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            );
+        }
+
+        // Banks Tab Component
+        function BanksTab({ banks, transactions, onAdd, onEdit, onDelete }) {
+            // Calcular saldo de cada banco/cartão baseado nas transações
+            const banksWithBalance = banks.map(bank => {
+                const bankTransactions = transactions.filter(t => 
+                    t.bank === bank.name && new Date(t.date) <= new Date()
+                );
+                
+                const balance = bankTransactions.reduce((sum, t) => {
+                    const amount = parseFloat(t.amount);
+                    return sum + (t.type === 'income' ? amount : -amount);
+                }, 0);
+
+                return { ...bank, balance };
+            });
+
+            const totalBalance = banksWithBalance.reduce((sum, b) => sum + b.balance, 0);
+
+            return (
+                <div>
+                    <div className="card">
+                        <div className="card-header">
+                            <h2 className="card-title">💼 Resumo Consolidado</h2>
+                            <button className="btn btn-primary btn-sm" onClick={onAdd}>
+                                ➕ Adicionar Conta/Cartão
+                            </button>
+                        </div>
+
+                        <div style={{
+                            background: 'linear-gradient(135deg, var(--primary), var(--info))',
+                            color: 'white',
+                            padding: '2rem',
+                            borderRadius: '16px',
+                            textAlign: 'center'
+                        }}>
+                            <div style={{fontSize: '0.875rem', opacity: 0.9, marginBottom: '0.5rem'}}>
+                                SALDO TOTAL CONSOLIDADO
+                            </div>
+                            <div style={{fontSize: '3rem', fontWeight: 900, fontFamily: 'Epilogue, sans-serif'}}>
+                                R$ {totalBalance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                            </div>
+                            <div style={{fontSize: '0.875rem', opacity: 0.9, marginTop: '0.5rem'}}>
+                                {banksWithBalance.length} contas e cartões
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bank-grid">
+                        {banksWithBalance.map(bank => (
+                            <div key={bank.id} className="bank-card" style={{
+                                background: bank.color || 'linear-gradient(135deg, var(--primary), var(--info))'
+                            }}>
+                                <div className="bank-name">{bank.name}</div>
+                                <div className="bank-balance">
+                                    R$ {bank.balance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                                </div>
+                                <div className="bank-type">{bank.type}</div>
+                                
+                                <div style={{
+                                    marginTop: '1.5rem',
+                                    display: 'flex',
+                                    gap: '0.5rem'
+                                }}>
+                                    <button 
+                                        className="btn btn-sm"
+                                        style={{
+                                            background: 'rgba(255,255,255,0.2)',
+                                            color: 'white',
+                                            flex: 1
+                                        }}
+                                        onClick={() => onEdit(bank)}
+                                    >
+                                        ✏️ Editar
+                                    </button>
+                                    <button 
+                                        className="btn btn-sm"
+                                        style={{
+                                            background: 'rgba(255,255,255,0.2)',
+                                            color: 'white',
+                                            flex: 1
+                                        }}
+                                        onClick={() => onDelete(bank.id)}
+                                    >
+                                        🗑️ Excluir
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+
+                        {banksWithBalance.length === 0 && (
+                            <div className="empty-state">
+                                <div className="empty-state-icon">🏦</div>
+                                <div className="empty-state-title">Nenhuma conta cadastrada</div>
+                                <p>Adicione suas contas e cartões para acompanhar saldos</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // Transaction Modal Component
+        function TransactionModal({ transaction, banks, onSave, onClose }) {
+            const [formData, setFormData] = useState({
+                type: transaction?.type || 'expense',
+                category: transaction?.category || '',
+                amount: transaction?.amount || '',
+                date: transaction?.date || new Date().toISOString().split('T')[0],
+                description: transaction?.description || '',
+                bank: transaction?.bank || '',
+                paymentMethod: transaction?.paymentMethod || '',
+                recurring: transaction?.recurring || false
+            });
+
+            const categories = formData.type === 'expense' 
+                ? EXPENSE_CATEGORIES 
+                : INCOME_CATEGORIES;
+
+            function handleSubmit(e) {
+                e.preventDefault();
+                onSave(formData);
+            }
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 className="modal-title">
+                                {transaction ? '✏️ Editar Transação' : '➕ Nova Transação'}
+                            </h2>
+                            <button className="btn-icon" onClick={onClose}>✕</button>
+                        </div>
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label className="form-label">Tipo de Transação</label>
+                                    <select
+                                        className="form-select"
+                                        value={formData.type}
+                                        onChange={(e) => setFormData({...formData, type: e.target.value, category: ''})}
+                                    >
+                                        <option value="expense">❌ Despesa</option>
+                                        <option value="income">✅ Receita</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Categoria</label>
+                                    <select
+                                        className="form-select"
+                                        value={formData.category}
+                                        onChange={(e) => setFormData({...formData, category: e.target.value})}
+                                        required
+                                    >
+                                        <option value="">Selecione a categoria...</option>
+                                        {categories.map(cat => (
+                                            <option key={cat.code} value={cat.name}>
+                                                {cat.code} - {cat.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label className="form-label">Valor (R$)</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            className="form-input"
+                                            value={formData.amount}
+                                            onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                                            placeholder="0,00"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="form-label">Data</label>
+                                        <input
+                                            type="date"
+                                            className="form-input"
+                                            value={formData.date}
+                                            onChange={(e) => setFormData({...formData, date: e.target.value})}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label className="form-label">Banco/Conta (opcional)</label>
+                                        <select
+                                            className="form-select"
+                                            value={formData.bank}
+                                            onChange={(e) => setFormData({...formData, bank: e.target.value})}
+                                        >
+                                            <option value="">Não especificado</option>
+                                            {banks.map(bank => (
+                                                <option key={bank.id} value={bank.name}>{bank.name}</option>
+                                            ))}
+                                            {BANKS.map(bank => (
+                                                <option key={bank} value={bank}>{bank}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="form-label">Forma de Pagamento (opcional)</label>
+                                        <select
+                                            className="form-select"
+                                            value={formData.paymentMethod}
+                                            onChange={(e) => setFormData({...formData, paymentMethod: e.target.value})}
+                                        >
+                                            <option value="">Não especificado</option>
+                                            {PAYMENT_METHODS.map(method => (
+                                                <option key={method} value={method}>{method}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Descrição/Observações (opcional)</label>
+                                    <textarea
+                                        className="form-textarea"
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                        placeholder="Adicione detalhes sobre esta transação..."
+                                        rows="3"
+                                    />
+                                </div>
+
+                                <div className="form-checkbox">
+                                    <input
+                                        type="checkbox"
+                                        id="recurring"
+                                        checked={formData.recurring}
+                                        onChange={(e) => setFormData({...formData, recurring: e.target.checked})}
+                                    />
+                                    <label htmlFor="recurring">
+                                        🔄 Lançamento recorrente (mensal)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={onClose}>
+                                    Cancelar
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    {transaction ? '💾 Salvar Alterações' : '➕ Adicionar Transação'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        // Bank Modal Component
+        function BankModal({ bank, onSave, onClose }) {
+            const [formData, setFormData] = useState({
+                name: bank?.name || '',
+                type: bank?.type || 'Conta Corrente',
+                color: bank?.color || '#0ea5e9'
+            });
+
+            const colors = [
+                '#0ea5e9', '#8b5cf6', '#ec4899', '#f59e0b', 
+                '#10b981', '#ef4444', '#6366f1', '#14b8a6'
+            ];
+
+            function handleSubmit(e) {
+                e.preventDefault();
+                onSave(formData);
+            }
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 className="modal-title">
+                                {bank ? '✏️ Editar Conta/Cartão' : '➕ Nova Conta/Cartão'}
+                            </h2>
+                            <button className="btn-icon" onClick={onClose}>✕</button>
+                        </div>
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label className="form-label">Nome da Conta/Cartão</label>
+                                    <select
+                                        className="form-select"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                        required
+                                    >
+                                        <option value="">Selecione...</option>
+                                        {BANKS.map(b => (
+                                            <option key={b} value={b}>{b}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Tipo</label>
+                                    <select
+                                        className="form-select"
+                                        value={formData.type}
+                                        onChange={(e) => setFormData({...formData, type: e.target.value})}
+                                        required
+                                    >
+                                        <option value="Conta Corrente">🏦 Conta Corrente</option>
+                                        <option value="Conta Poupança">💰 Conta Poupança</option>
+                                        <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
+                                        <option value="Investimento">📈 Investimento</option>
+                                        <option value="Dinheiro">💵 Dinheiro</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Cor do Cartão</label>
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(4, 1fr)',
+                                        gap: '1rem'
+                                    }}>
+                                        {colors.map(color => (
+                                            <button
+                                                key={color}
+                                                type="button"
+                                                onClick={() => setFormData({...formData, color})}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '50px',
+                                                    borderRadius: '12px',
+                                                    background: color,
+                                                    border: formData.color === color ? '4px solid var(--text-primary)' : '2px solid var(--border)',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    color: 'white',
+                                                    fontSize: '1.5rem'
+                                                }}
+                                            >
+                                                {formData.color === color && '✓'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={onClose}>
+                                    Cancelar
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    {bank ? '💾 Salvar' : '➕ Adicionar'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        // Admin Tab Component
+        function AdminTab({ userId }) {
+            const [users, setUsers] = useState([]);
+            const [loading, setLoading] = useState(true);
+
+            useEffect(() => {
+                loadUsers();
+            }, []);
+
+            async function loadUsers() {
+                try {
+                    const usersJson = await StorageService.get('users');
+                    setUsers(usersJson ? JSON.parse(usersJson) : []);
+                } catch (error) {
+                    console.error('Erro ao carregar usuários:', error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            async function deleteUser(id) {
+                if (id === userId) {
+                    alert('Você não pode deletar sua própria conta!');
+                    return;
+                }
+
+                if (confirm('Tem certeza que deseja excluir este usuário? Todos os dados serão perdidos!')) {
+                    const updated = users.filter(u => u.id !== id);
+                    setUsers(updated);
+                    await StorageService.set('users', JSON.stringify(updated));
+                    await StorageService.delete(`transactions_${id}`);
+                    await StorageService.delete(`banks_${id}`);
+                }
+            }
+
+            if (loading) {
+                return (
+                    <div className="loading">
+                        <div className="spinner"></div>
+                        <p>Carregando usuários...</p>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="card">
+                    <div className="card-header">
+                        <h2 className="card-title">👥 Gerenciar Usuários</h2>
+                        <div style={{
+                            background: 'var(--info-light)',
+                            color: 'var(--info)',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '8px',
+                            fontSize: '0.875rem',
+                            fontWeight: 600
+                        }}>
+                            {users.length} usuário{users.length !== 1 ? 's' : ''} cadastrado{users.length !== 1 ? 's' : ''}
+                        </div>
+                    </div>
+
+                    <div className="admin-grid">
+                        {users.map(user => (
+                            <div key={user.id} style={{
+                                background: 'var(--bg-secondary)',
+                                borderRadius: '16px',
+                                padding: '1.5rem',
+                                border: '1px solid var(--border)'
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'start',
+                                    marginBottom: '1rem'
+                                }}>
+                                    <div>
+                                        <div style={{
+                                            fontWeight: 800,
+                                            fontSize: '1.125rem',
+                                            marginBottom: '0.25rem'
+                                        }}>
+                                            {user.name}
+                                        </div>
+                                        <div style={{
+                                            color: 'var(--text-secondary)',
+                                            fontSize: '0.875rem'
+                                        }}>
+                                            {user.email}
+                                        </div>
+                                    </div>
+                                    <span style={{
+                                        padding: '0.25rem 0.75rem',
+                                        borderRadius: '20px',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 600,
+                                        background: user.role === 'admin' ? 'var(--primary-light)' : 'var(--info-light)',
+                                        color: user.role === 'admin' ? 'var(--primary)' : 'var(--info)'
+                                    }}>
+                                        {user.role === 'admin' ? '👑 Admin' : '👤 Usuário'}
+                                    </span>
+                                </div>
+                                <div style={{
+                                    fontSize: '0.875rem',
+                                    color: 'var(--text-secondary)',
+                                    marginBottom: '1rem'
+                                }}>
+                                    📅 Cadastrado em: {new Date(user.createdAt).toLocaleDateString('pt-BR')}
+                                </div>
+                                {user.id !== userId && (
+                                    <button 
+                                        className="btn btn-danger btn-sm" 
+                                        style={{width: '100%'}}
+                                        onClick={() => deleteUser(user.id)}
+                                    >
+                                        🗑️ Excluir Usuário
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            const [showLogin, setShowLogin] = useState(true);
+            const { currentUser, login, register, logout, loading } = useAuth();
+
+            useEffect(() => {
+                StorageService.init();
+            }, []);
+
+            if (loading) {
+                return (
+                    <div className="loading" style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <div>
+                            <div className="spinner"></div>
+                            <p>Carregando aplicativo...</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (!currentUser) {
+                return showLogin ? (
+                    <LoginForm 
+                        onLogin={login} 
+                        onToggle={() => setShowLogin(false)} 
+                    />
+                ) : (
+                    <RegisterForm 
+                        onRegister={register} 
+                        onToggle={() => setShowLogin(true)} 
+                    />
+                );
+            }
+
+            return <Dashboard user={currentUser} onLogout={logout} />;
+        }
+
+        // Render App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
